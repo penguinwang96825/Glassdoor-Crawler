@@ -83,7 +83,7 @@ def find_total_page(query):
 ```
 
 ## Daily Crawler
-Create a crawler for Glassdoor on a daily basis, and insert the dataframe into a database.
+Create a crawler for Glassdoor, and insert the dataframe into a database.
 ```python
 def daily_glassdoor_crawler(queries):
     data = crawl_glassdoor(queries)

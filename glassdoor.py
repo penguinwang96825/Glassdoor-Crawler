@@ -1,3 +1,6 @@
+import json
+import sys
+import urllib
 import requests
 import random
 import sqlite3
@@ -89,13 +92,39 @@ def read_glassdoor_from_db():
     return data
 
 
+def get_entities_from_sheffield_gate(text):
+    # The base URL for all GATE Cloud API services
+    prefix = "https://cloud-api.gate.ac.uk/"
+    # The service point for ANNIE
+    service = "process-document/annie-named-entity-recognizer"
+    url = urllib.parse.urljoin(prefix, service)
+    headers = {'Content-Type': 'text/plain'}
+    response = requests.post(url, data=text, headers=headers)
+    gate_json = response.json()
+    response_text = gate_json["text"]
+    for annotation_type, annotations in gate_json["entities"].items():
+        for annotation in annotations:
+            i, j = annotation["indices"]
+            print(annotation_type, ":", response_text[i:j])
+
+
+def test():
+    text = """You will work across all business functions, analyzing data and presenting solutions to some of our most pressing commercial business questions.
+        Help build our reporting and data visualization capabilities across the business.
+        Deliver data projects across the operations, marketing, and targeting space.
+        Support the delivery of our data strategy within a growing team.
+        Drive a data-driven culture by providing advice, training, and tools to your colleagues.
+        Have the opportunity to grow as an Analyst with great potential for career progression and development as we grow the team."""
+    get_entities_from_sheffield_gate(text)
+
+
 def main():
     queries = [
-        "nlp", "machine learning", "deep learning", "data scientist", 
+        "nlp", "machine learning", "deep learning", "data scientist",
         "natural language processing", "data engineer", "data analyst"
     ]
     daily_glassdoor_crawler(queries)
 
 
 if __name__ == "__main__":
-    main()
+    test()
